@@ -12,10 +12,6 @@ jobs:
     permissions:
       contents: read
 
-    defaults:
-      run:
-        working-directory: backend  # ✅ points to your backend folder
-
     steps:
       - uses: actions/checkout@v4
 
@@ -24,20 +20,20 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and build
+      - name: Install dependencies and build backend
         run: |
+          cd backend
           npm install
           npm run build --if-present
-          # Removed npm run test to avoid exit 1 error
 
-      - name: Zip artifact for deployment
-        run: zip -r ../release.zip .
+      - name: Zip backend folder
+        run: zip -r release.zip backend
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: backend/release.zip
+          path: release.zip  # ✅ correct relative path from root
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,15 +43,15 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
+      - name: Unzip artifact
         run: unzip release.zip
 
-      - name: Login to Azure
+      - name: Azure Login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EFD03150D08D479089A356A94A6C2BFD }}
@@ -63,9 +59,8 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_972ECA4285B947B689073640E5BDC66E }}
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Smarthire-backend'
           slot-name: 'Production'
-          package: .
+          package: backend  # ✅ deploy the unzipped backend folder
