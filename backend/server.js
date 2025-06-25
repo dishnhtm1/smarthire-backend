@@ -4,29 +4,52 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
-const candidateRoutes = require('./routes/candidateRoutes');
-const adminRoutes = require('./routes/adminRoutes'); // ✅ Added
-const recruiterRoutes = require('./routes/recruiterRoutes');
-const clientRoutes = require('./routes/clientRoutes');
+const candidateRoutes = require("./routes/candidateRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const recruiterRoutes = require("./routes/recruiterRoutes");
+const clientRoutes = require("./routes/clientRoutes");
+
 const app = express();
 app.use(express.json());
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
-
-app.use('/uploads', express.static('uploads'));
-app.use('/api/recruiter', recruiterRoutes);
-app.use("/api/auth", authRoutes);
-app.use('/api/candidate', candidateRoutes);
-app.use('/api/admin', adminRoutes); 
-app.use('/api/client', clientRoutes);
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    app.listen(process.env.PORT, () =>
-      console.log(`🚀 Server running at http://localhost:${process.env.PORT}`)
-    );
+// ✅ Azure + Local CORS support
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000", // local frontend
+      "https://smarthire-frontend.azurestaticapps.net" // Azure frontend
+    ],
+    credentials: true,
   })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+);
+
+// ✅ Serve uploaded files if needed
+app.use("/uploads", express.static("uploads"));
+
+// ✅ API routes
+app.use("/api/auth", authRoutes);
+app.use("/api/candidate", candidateRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/recruiter", recruiterRoutes);
+app.use("/api/client", clientRoutes);
+
+// ✅ Root route for basic check
+app.get("/", (req, res) => {
+  res.send("✅ SmartHire backend is live!");
+});
+
+// ✅ MongoDB connection + start server
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => {
+      console.log(`🚀 SmartHire backend is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
