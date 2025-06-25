@@ -13,25 +13,27 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: 🔧 Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: 📦 Install dependencies and build
         run: |
+          cd backend
           npm install
           npm run build --if-present
           npm run test --if-present
-        working-directory: smarthire-backend
 
-      - name: Zip artifact for deployment
-        run: zip -r ../release.zip .
-        working-directory: smarthire-backend
+      - name: 📦 Zip the backend folder
+        run: |
+          cd backend
+          zip -r ../release.zip .
 
-      - name: Upload artifact
+      - name: ⬆️ Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -45,22 +47,22 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact
+      - name: 📥 Download artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
 
-      - name: Unzip artifact
+      - name: 📂 Unzip artifact
         run: unzip release.zip
 
-      - name: Login to Azure
+      - name: 🔐 Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_852F2ADABC584F31B4A899EDE4EC3466 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D7D5B41E58834A4D9268228E9B59EC68 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8B9CFA54AFA548FDAAD65825524B3EAF }}
 
-      - name: Deploy to Azure Web App
+      - name: 🚀 Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Smarthire-backend'
