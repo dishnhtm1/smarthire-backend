@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000", // local frontend
-      "https://smarthire-frontend.azurestaticapps.net" // Azure frontend
+      "https://smarthire-backend-c7cvfhfyd5caeph3.japanwest-01.azurewebsites.net" // Azure frontend
     ],
     credentials: true,
   })
