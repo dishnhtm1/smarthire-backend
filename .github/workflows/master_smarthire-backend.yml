@@ -13,7 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+<<<<<<< HEAD
       contents: read # This is required for actions/checkout
+=======
+      contents: read #This is required for actions/checkout
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
 
     steps:
       - uses: actions/checkout@v4
@@ -28,24 +32,40 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
+<<<<<<< HEAD
         working-directory: smarthire-backend
 
       - name: Zip artifact for deployment
         run: zip -r release.zip .
         working-directory: smarthire-backend
+=======
+
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
+<<<<<<< HEAD
           path: smarthire-backend/release.zip
+=======
+          path: release.zip
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+<<<<<<< HEAD
     permissions:
       id-token: write # Required for requesting the JWT
       contents: read  # Required for actions/checkout
+=======
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
 
     steps:
       - name: Download artifact from build job
@@ -55,7 +75,15 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_852F2ADABC584F31B4A899EDE4EC3466 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D7D5B41E58834A4D9268228E9B59EC68 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8B9CFA54AFA548FDAAD65825524B3EAF }}
 
+<<<<<<< HEAD
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -64,8 +92,16 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8B9CFA54AFA548FDAAD65825524B3EAF }}
 
       - name: Deploy to Azure Web App
+=======
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Smarthire-backend'
           slot-name: 'Production'
           package: .
+<<<<<<< HEAD
+=======
+          
+>>>>>>> e3736151ba8e0661ea9e6df2859f07375ab97df5
