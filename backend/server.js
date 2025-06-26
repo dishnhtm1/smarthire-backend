@@ -13,16 +13,24 @@ const app = express();
 app.use(express.json());
 
 // ✅ Azure + Local CORS support
-app.use(
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:3000", // local frontend
+//       "https://smarthire-backend-c7cvfhfyd5caeph3.japanwest-01.azurewebsites.net" // Azure frontend
+//     ],
+//     credentials: true,
+//   })
+// );
+ app.use(
   cors({
     origin: [
-      "http://localhost:3000", // local frontend
-      "https://smarthire-backend-c7cvfhfyd5caeph3.japanwest-01.azurewebsites.net" // Azure frontend
+      "http://localhost:3000", // ✅ local frontend
+      "https://black-wave-0be4cbe00.2.azurestaticapps.net", // ✅ deployed frontend
     ],
     credentials: true,
   })
 );
-
 // ✅ Serve uploaded files if needed
 app.use("/uploads", express.static("uploads"));
 
