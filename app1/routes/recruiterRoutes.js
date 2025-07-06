@@ -232,6 +232,7 @@ Job Description: ${jobDescription}
         negatives: parsed.negatives || [],
         recommendations: parsed.recommendations || [],
         clientId,
+        clientEmail,
         jobId,
         jobTitle
       });
